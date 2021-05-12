@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  
+[key point]
+Mybatis 사용 프로젝트 진행시
+
+1. mapper namespace 이름 : DAO 가지는 interface 이름을 그대로
+2. <select id="" 이름을  interface 가지는 함수명과 동일
+result : interface 와 mapper 있으면 실행
+
+	//게시물 개수
+	public int getCount(String field, String query) throws ClassNotFoundException, SQLException;
+	//전체 게시물
+	public List<Notice> getNotices(int page, String field, String query) throws ClassNotFoundException, SQLException;
+	//게시물 삭제
+	public int delete(String seq) throws ClassNotFoundException, SQLException;
+	//게시물 수정
+	public int update(Notice notice) throws ClassNotFoundException, SQLException;
+	//게시물 상세
+	public Notice getNotice(String seq) throws ClassNotFoundException, SQLException;
+	//게시물 입력
+	public int insert(Notice n) throws ClassNotFoundException, SQLException;
+-->
+
+<mapper namespace="dao.EmpDao">
+
+	<select id="login" resultType="String">
+		select pwd
+		from adminlist
+		where userid=#{userId}
+	</select>
+	
+	<select id="list" resultType="vo.Emp">
+		select * from  (
+		select rownum rn, empno, ename, job, mgr, hiredate, sal, comm, deptno, filename
+		from emp 
+		where rownum &lt;= ${param1} * ${param2}
+		) where rn 	&gt;=  ${param1} * ${param2} - (${param2} - 1)
+	</select>
+	
+	<select id="EmpTotal" resultType="int">
+		select count(*) from emp
+	</select>
+	  
+	<select id="detailList" resultType="vo.Emp">
+		select * from emp where empno = ${empno}
+	</select>
+	
+	<select id="searchEmpno" resultType="vo.Emp">
+		select empno, ename, job, deptno, mgr, filename from emp where empno like '%${empno}%'
+	</select>
+	
+	<select id="searchEname" resultType="vo.Emp">
+		select empno, ename, job, deptno, mgr, filename from emp where ename like '%${ename}%'
+	</select>
+	  
+	 <insert id="insertEmp" parameterType="vo.Emp" >
+	 	insert into emp(empno,ename,job,mgr,hiredate,sal,comm,deptno,filename)
+	 	values(#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{deptno},#{filename,jdbcType=VARCHAR})
+	 </insert>
+	 
+	 <delete id="deleteEmp">
+	 	delete from emp where empno=#{empno}
+	 </delete>
+	 
+	 <update id="updateOkEmp" parameterType="vo.Emp">
+	 update emp set ename = #{ename}, job=#{job}, mgr = #{mgr}, hiredate = #{hiredate}, sal = #{sal},comm = #{comm}, deptno = #{deptno}, filename = #{filename,jdbcType=VARCHAR} WHERE empno = #{empno}
+	 </update>
+	 
+</mapper>
+
+
+
+
+
+
+
